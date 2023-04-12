@@ -13,6 +13,7 @@ model User {
   email      String    @db.VarChar
   password   String    @db.VarChar
   birth_at   DateTime? @db.Date
+  role       Int       @default(1)
   created_at DateTime  @default(now()) @db.Timestamp(6)
   updated_at DateTime  @default(now()) @db.Timestamp(6)
 

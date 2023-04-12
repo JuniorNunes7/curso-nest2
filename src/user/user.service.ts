@@ -59,6 +59,7 @@ export class UserService {
       email: data.email,
       birth_at: data.birth_at ? new Date(data.birth_at) : null,
       password: data.password,
+      role: data.role,
     });
   }
 }
