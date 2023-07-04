@@ -2,13 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateUserDTO) {
-    data = this.formatData(data);
+    data = await this.formatData(data);
     return this.prisma.user.create({
       data,
     });
@@ -35,7 +36,7 @@ export class UserService {
   async update(id: number, data: UpdateUserDTO) {
     await this.getById(id);
 
-    data = this.formatData(data);
+    data = await this.formatData(data);
     return this.prisma.user.update({
       data,
       where: {
@@ -53,12 +54,13 @@ export class UserService {
     });
   }
 
-  formatData(data: CreateUserDTO | UpdateUserDTO) {
+  async formatData(data: CreateUserDTO | UpdateUserDTO) {
+    const password = await bcrypt.hash(data.password, await bcrypt.genSalt());
     return (data = {
       name: data.name,
       email: data.email,
       birth_at: data.birth_at ? new Date(data.birth_at) : null,
-      password: data.password,
+      password: password,
       role: data.role,
     });
   }
