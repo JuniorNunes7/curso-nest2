@@ -1,26 +1,40 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdateUserDTO } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { UserEntity } from './entity/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
 
   async create(data: CreateUserDTO) {
-    data = await this.formatData(data);
-    return this.prisma.user.create({
-      data,
-    });
+    try {
+      data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
+
+      const user = this.userRepository.create(data);
+
+      return this.userRepository.save(user);
+    } catch (e) {
+      throw new BadRequestException(e);
+    }
   }
 
   async getAll() {
-    return this.prisma.user.findMany();
+    return this.userRepository.find();
   }
 
   async getById(id: number) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.userRepository.findOne({
       where: {
         id,
       },
@@ -36,32 +50,16 @@ export class UserService {
   async update(id: number, data: UpdateUserDTO) {
     await this.getById(id);
 
-    data = await this.formatData(data);
-    return this.prisma.user.update({
-      data,
-      where: {
-        id,
-      },
-    });
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
+    }
+    await this.userRepository.update(id, data);
+
+    return this.getById(id);
   }
 
   async delete(id: number) {
     await this.getById(id);
-    return this.prisma.user.delete({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async formatData(data: CreateUserDTO | UpdateUserDTO) {
-    const password = await bcrypt.hash(data.password, await bcrypt.genSalt());
-    return (data = {
-      name: data.name,
-      email: data.email,
-      birth_at: data.birth_at ? new Date(data.birth_at) : null,
-      password: password,
-      role: data.role,
-    });
+    return this.userRepository.delete(id);
   }
 }

@@ -26,7 +26,7 @@ export class CreateUserDTO {
 
   @IsOptional()
   @IsDateString()
-  birth_at: string | Date;
+  birth_at: string;
 
   @IsOptional()
   @IsEnum(Role)
