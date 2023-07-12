@@ -29,6 +29,12 @@ export class UserService {
     }
   }
 
+  async exists(id: number) {
+    return await this.userRepository.exist({
+      where: { id },
+    });
+  }
+
   async getAll() {
     return this.userRepository.find();
   }
@@ -60,6 +66,8 @@ export class UserService {
 
   async delete(id: number) {
     await this.getById(id);
-    return this.userRepository.delete(id);
+    await this.userRepository.delete(id);
+
+    return true;
   }
 }
