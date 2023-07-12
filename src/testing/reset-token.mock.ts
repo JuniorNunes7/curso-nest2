@@ -1,0 +1,2 @@
+export const resetToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiaWF0IjoxNjg5MDgxMTc0LCJleHAiOjE2ODkwODI5NzQsImF1ZCI6InVzZXJzIiwiaXNzIjoiZm9yZ2V0Iiwic3ViIjoiNiJ9.X8EDqGBBcjxl1ojV69V7_TZmQ4V5Jr17hQIo9V50aZs';
