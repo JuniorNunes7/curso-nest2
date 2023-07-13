@@ -1,6 +1,5 @@
 import { TestingModule, Test } from '@nestjs/testing';
 import { AuthGuard } from '../guards/auth.guard';
-import { RoleGuard } from '../guards/role.guard';
 import { accessToken } from '../testing/access-token.mock';
 import { authForgetDTO } from '../testing/auth-forget-dto.mock';
 import { authLoginDTO } from '../testing/auth-login-dto.mock';
@@ -72,14 +71,4 @@ describe('AuthController', () => {
       expect(result).toEqual({ success: true });
     });
   });
-
-  // describe('Guards', () => {
-  //   it('applied on the controller', () => {
-  //     const guards = Reflect.getMetadata('__guards__', AuthController);
-
-  //     expect(guards.length).toEqual(2);
-  //     expect(new guards[0]()).toBeInstanceOf(AuthGuard);
-  //     expect(new guards[1]()).toBeInstanceOf(RoleGuard);
-  //   });
-  // });
 });
